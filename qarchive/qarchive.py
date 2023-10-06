@@ -39,6 +39,16 @@ class SP(object):
     @property
     def energy(self):
         return self.energy_function[-1].energy[()]
+    
+    @property
+    def gradient(self):
+        if 'gradient' in self.energy_function[-1]._v_children:
+            return self.energy_function[-1].gradient[()]
+
+    @property
+    def hessian(self):
+        if 'hessian' in self.energy_function[-1]._v_children:
+            return self.energy_function[-1].hessian[()]
 
     @property
     def mo_coefficients(self):
@@ -55,11 +65,19 @@ class GeomOpt(object):
 
     @property
     def energy(self):
-        return self.iter[-1].energy[()]
+        return self.iter[-1].energy
+
+    @property
+    def gradient(self):
+        return self.iter[-1].gradient
+
+    @property
+    def hessian(self):
+        return self.iter[-1].hessian
 
     @property
     def mo_coefficients(self):
-        return self.iter[-1].mo_coefficients[()]
+        return self.iter[-1].mo_coefficients
 
 
 job_class_mapping = {
