@@ -13,6 +13,7 @@ class QArchive(object):
             node = job._f_list_nodes()[0]
             job_class = job_class_mapping[node._v_name]
             jobs.append(job_class(node))
+        jobs = sorted(jobs, key=lambda job: job.sort_index)
         self.job = Job(jobs)
 
     def close(self):
@@ -28,12 +29,14 @@ class QArchive(object):
         return f'QArchive(\'{self.file.filename}\')'
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, order=True)
 class SP(object):
-    _node: tables.Group
-    energy_function: List[tables.Group] = field(init=False)
+    _node: tables.Group = field(compare=False)
+    sort_index: int = field(init=False, repr=False)
+    energy_function: List[tables.Group] = field(init=False, compare=False)
 
     def __post_init__(self):
+        object.__setattr__(self, 'sort_index', int(self._node._v_parent._v_name))
         object.__setattr__(self, 'energy_function', self._node.energy_function._f_list_nodes())
 
     @property
@@ -55,13 +58,15 @@ class SP(object):
         return self.energy_function[-1].method.scf.molecular_orbitals.mo_coefficients[()]
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, order=True)
 class GeomOpt(object):
-    _node: tables.Group
-    iter: List[SP] = field(init=False)
+    _node: tables.Group = field(compare=False)
+    sort_index: int = field(init=False, repr=False)
+    iter: List[SP] = field(init=False, compare=False)
 
     def __post_init__(self):
-        object.__setattr__(self, 'iter', [SP(iter.sp) for iter in self._node.iter._f_iter_nodes()])
+        object.__setattr__(self, 'sort_index', int(self._node._v_parent._v_name))
+        object.__setattr__(self, 'iter', sorted([SP(iter.sp) for iter in self._node.iter._f_iter_nodes()]))
 
     @property
     def energy(self):
