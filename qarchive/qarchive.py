@@ -35,7 +35,10 @@ class SP:
     """A class for reading single point energy calculations from Q-Chem archive files."""
     _node: tables.Group = field(compare=False)
     sort_index: int = field(init=False, repr=False)
+    aobasis: tables.Group = field(init=False, compare=False, repr=False)
     energy_function: list[tables.Group] = field(init=False, compare=False, repr=False)
+    structure: tables.Group = field(init=False, compare=False, repr=False)
+    observables: Optional[tables.Group] = field(init=False, compare=False, repr=False)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, 'sort_index', int(self._node._v_parent._v_name))
@@ -75,37 +78,37 @@ class GeomOpt:
     """A class for reading geometry optimization calculations from Q-Chem archive files."""
     _node: tables.Group = field(compare=False)
     sort_index: int = field(init=False, repr=False)
-    iter: list[SP] = field(init=False, compare=False, repr=False)
+    iters: list[SP] = field(init=False, compare=False, repr=False)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, 'sort_index', int(self._node._v_parent._v_name))
         iters = sorted([SP(iter.sp) for iter in self._node.iter._f_iter_nodes()])
-        object.__setattr__(self, 'iter', iters)
+        object.__setattr__(self, 'iters', iters)
 
     @property
     def energy(self) -> float:
         """Return the energy of the last iteration."""
-        return self.iter[-1].energy
+        return self.iters[-1].energy
 
     @property
     def gradient(self) -> Optional[np.ndarray]:
         """Return the gradient of the last iteration."""
-        return self.iter[-1].gradient
+        return self.iters[-1].gradient
 
     @property
     def hessian(self) -> Optional[np.ndarray]:
         """Return the hessian of the last iteration."""
-        return self.iter[-1].hessian
+        return self.iters[-1].hessian
 
     @property
     def mo_coefficients(self) -> np.ndarray:
         """Return the MO coefficients of the last iteration."""
-        return self.iter[-1].mo_coefficients
+        return self.iters[-1].mo_coefficients
 
     @property
     def energies(self) -> np.ndarray:
         """Return the energies of all iterations."""
-        return np.array([iter.energy for iter in self.iter])
+        return np.array([iter.energy for iter in self.iters])
 
 
 Job = Union[SP, GeomOpt]
