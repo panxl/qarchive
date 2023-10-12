@@ -1,6 +1,7 @@
+from __future__ import annotations
 from typing import Union, Optional
 from dataclasses import dataclass, field
-from numpy import ndarray
+import numpy as np
 import tables
 
 
@@ -12,15 +13,14 @@ class QArchive:
         jobs : list[Job] = []
         for job in self.file.root.job:
             node = job._f_list_nodes()[0]
-            job_class = job_class_mapping[node._v_name]
-            jobs.append(job_class(node))
+            jobs.append(create_job(node))
         self.jobs = sorted(jobs, key=lambda job: job.sort_index)
 
     def close(self) -> None:
         """Close the archive file."""
         self.file.close()
 
-    def __enter__(self) -> 'QArchive':
+    def __enter__(self) -> QArchive:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -47,21 +47,21 @@ class SP:
         return self.energy_function[-1].energy[()]
 
     @property
-    def gradient(self) -> Optional[ndarray]:
+    def gradient(self) -> Optional[np.ndarray]:
         """Return the gradient."""
         if 'gradient' in self.energy_function[-1]:
             return self.energy_function[-1].gradient[()]
         return None
 
     @property
-    def hessian(self) -> Optional[ndarray]:
+    def hessian(self) -> Optional[np.ndarray]:
         """Return the hessian."""
         if 'hessian' in self.energy_function[-1]:
             return self.energy_function[-1].hessian[()]
         return None
 
     @property
-    def mo_coefficients(self) -> ndarray:
+    def mo_coefficients(self) -> np.ndarray:
         """Return the MO coefficients."""
         return self.energy_function[-1].method.scf.molecular_orbitals.mo_coefficients[()]
 
@@ -84,19 +84,24 @@ class GeomOpt:
         return self.iter[-1].energy
 
     @property
-    def gradient(self) -> Optional[ndarray]:
+    def gradient(self) -> Optional[np.ndarray]:
         """Return the gradient of the last iteration."""
         return self.iter[-1].gradient
 
     @property
-    def hessian(self) -> Optional[ndarray]:
+    def hessian(self) -> Optional[np.ndarray]:
         """Return the hessian of the last iteration."""
         return self.iter[-1].hessian
 
     @property
-    def mo_coefficients(self) -> ndarray:
+    def mo_coefficients(self) -> np.ndarray:
         """Return the MO coefficients of the last iteration."""
         return self.iter[-1].mo_coefficients
+
+    @property
+    def energies(self) -> np.ndarray:
+        """Return the energies of all iterations."""
+        return np.array([iter.energy for iter in self.iter])
 
 
 Job = Union[SP, GeomOpt]
@@ -106,3 +111,12 @@ job_class_mapping : dict[str, type] = {
     "sp": SP,
     "geom_opt": GeomOpt,
     }
+
+
+def create_job(node: tables.Group) -> Job:
+    """Create a Job object from a node."""
+    job_type = node._v_name
+    if job_type not in job_class_mapping:
+        raise ValueError(f'Unknown job type: {job_type}')
+    job_class = job_class_mapping[job_type]
+    return job_class(node)
