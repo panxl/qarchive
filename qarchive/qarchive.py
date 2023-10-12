@@ -35,11 +35,15 @@ class SP:
     """A class for reading single point energy calculations from Q-Chem archive files."""
     _node: tables.Group = field(compare=False)
     sort_index: int = field(init=False, repr=False)
-    energy_function: list[tables.Group] = field(init=False, compare=False)
+    energy_function: list[tables.Group] = field(init=False, compare=False, repr=False)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, 'sort_index', int(self._node._v_parent._v_name))
+        object.__setattr__(self, 'aobasis', self._node.aobasis)
         object.__setattr__(self, 'energy_function', self._node.energy_function._f_list_nodes())
+        object.__setattr__(self, 'structure', self._node.structure)
+        if "observables" in self._node:
+            object.__setattr__(self, 'observables', self._node.observables)
 
     @property
     def energy(self) -> float:
@@ -71,7 +75,7 @@ class GeomOpt:
     """A class for reading geometry optimization calculations from Q-Chem archive files."""
     _node: tables.Group = field(compare=False)
     sort_index: int = field(init=False, repr=False)
-    iter: list[SP] = field(init=False, compare=False)
+    iter: list[SP] = field(init=False, compare=False, repr=False)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, 'sort_index', int(self._node._v_parent._v_name))
