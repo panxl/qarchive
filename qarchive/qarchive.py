@@ -51,27 +51,36 @@ class SP:
     @property
     def energy(self) -> float:
         """Return the energy."""
-        return self.energy_function[-1].energy[()]
+        return self.energy_function[-1].energy.read().item()
 
     @property
     def gradient(self) -> Optional[np.ndarray]:
         """Return the gradient."""
         if 'gradient' in self.energy_function[-1]:
-            return self.energy_function[-1].gradient[()]
+            return self.energy_function[-1].gradient.read()
         return None
 
     @property
     def hessian(self) -> Optional[np.ndarray]:
         """Return the hessian."""
         if 'hessian' in self.energy_function[-1]:
-            return self.energy_function[-1].hessian[()]
+            return self.energy_function[-1].hessian.read()
         return None
 
     @property
     def mo_coefficients(self) -> np.ndarray:
         """Return the MO coefficients."""
-        return self.energy_function[-1].method.scf.molecular_orbitals.mo_coefficients[()]
+        return self.energy_function[-1].method.scf.molecular_orbitals.mo_coefficients.read()
 
+    @property
+    def alpha_mo_coefficients(self) -> np.ndarray:
+        """Return the Alpha MO coefficients."""
+        return self.mo_coefficients[0]
+
+    @property
+    def beta_mo_coefficients(self) -> np.ndarray:
+        """Return the Beta MO coefficients."""
+        return self.mo_coefficients[-1]
 
 @dataclass(frozen=True, order=True)
 class GeomOpt:
