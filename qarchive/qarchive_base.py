@@ -8,6 +8,7 @@ class QArchiveBase:
     data: InitVar[Mapping]
 
     def __post_init__(self, data) -> None:
+        # import qarchive_model here to avoid circular import
         qarchive_model = importlib.import_module('qarchive.qarchive_model')
         for key, value in data.items():
             if key in self.__annotations__:
