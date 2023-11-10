@@ -1,11 +1,11 @@
 #!/bin/bash
 
-python to_jsonschema.py qarchive_schema.json
+python scripts/to_jsonschema.py $1 > qarchive_schema.json
 
 datamodel-codegen \
     --input qarchive_schema.json \
     --input-file-type jsonschema \
-    --output qarchive_model.py \
+    --output qarchive/qarchive_model.py \
     --output-model-type dataclasses.dataclass \
     --base-class qarchive.qarchive_base.QArchiveBase \
     --use-generic-container-types \

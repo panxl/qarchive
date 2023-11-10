@@ -83,4 +83,4 @@ if __name__ == "__main__":
 
     convert_schema(schema, jsonschema, add_extras=True)
 
-    json.dump(jsonschema, open('qarchive_schema.json', 'w'), indent=4)
+    json.dump(jsonschema, sys.stdout, indent=4)

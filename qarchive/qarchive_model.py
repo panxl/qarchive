@@ -764,7 +764,7 @@ class JobItem(QArchiveBase):
 @dataclass
 class QArchive(QArchiveBase):
     """
-    The Q-Chem Archive file
+    The Q-Chem archive file
     """
 
     job: Optional[Sequence[JobItem]] = field(init=False, repr=False)
