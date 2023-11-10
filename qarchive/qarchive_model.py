@@ -3,34 +3,11 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, InitVar
+from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, Sequence, Mapping
+from typing import Optional, Sequence
 
-
-@dataclass
-class QArchiveBase:
-    data: InitVar[Mapping]
-
-    def __post_init__(self, data) -> None:
-        for key, value in data.items():
-            if key in self.__annotations__:
-                if isinstance(value, Mapping):
-                    field_type = eval(self.__annotations__[key])
-                    if field_type.__class__.__name__ == 'UnionType':
-                        field_type = field_type.__args__[0]
-                    if field_type.__name__ == 'Optional':
-                        field_type = field_type.__args__[0]
-                    if field_type.__name__ == 'Sequence':
-                        field_type = field_type.__args__[0]
-                        setattr(self, key, [
-                            field_type(value[k])
-                            for k in sorted(value, key=int)
-                        ])
-                    else:
-                        setattr(self, key, field_type(value))
-                else:
-                    setattr(self, key, value)
+from qarchive.qarchive_base import QArchiveBase
 
 
 @dataclass

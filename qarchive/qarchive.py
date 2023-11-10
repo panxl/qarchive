@@ -1,6 +1,6 @@
 import h5py
 
-from .qarchive_model import QArchive
+from qarchive.qarchive_model import QArchive
 
 
 @classmethod
