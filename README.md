@@ -3,7 +3,7 @@
 ## Convert Q-Chem schema to JSON schema
 
 ```bash
-bash codegen.sh qarchive.schema.json
+bash scripts/codegen.sh qarchive.schema.json
 ```
 
 ## Read a Q-Chem archive file
