@@ -31,3 +31,8 @@ list(qa.store.keys())
 ```python
 qa.store.get("energy")
 ```
+
+## Close the QArchive file
+```python
+qa.close()
+```
