@@ -11,12 +11,23 @@ bash scripts/codegen.sh qarchive.schema.json
 ```python
 from qarchive import QArchive
 
-qa = QArchive.from_h5py_file('path/to/archive.h5')
+qa = QArchive('path/to/archive.h5')
 ```
 
 ## Access the data
 
 ```python
 # Get energy from the last geometry optimization iteration
- qa.job[0].geom_opt.iter[-1].sp.energy_function[0].energy[()]
- ``````
+ qa.root.job[0].geom_opt.iter[-1].sp.energy_function[0].energy[()]
+ ```
+
+## Print keys in the QArchive store
+
+```python
+list(qa.store.keys())
+```
+
+## Access the energies in the QArchive store
+```python
+qa.store.get("energy")
+```

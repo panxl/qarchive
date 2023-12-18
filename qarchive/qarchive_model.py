@@ -762,7 +762,7 @@ class JobItem(QArchiveBase):
 
 
 @dataclass
-class QArchive(QArchiveBase):
+class QArchiveRoot(QArchiveBase):
     """
     The Q-Chem archive file
     """

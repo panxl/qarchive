@@ -9,20 +9,21 @@ class QArchiveBase:
 
     def __post_init__(self, data: Mapping) -> None:
         # import qarchive_model here to avoid circular import
-        qarchive_model = importlib.import_module('qarchive.qarchive_model')
+        qarchive_model = importlib.import_module("qarchive.qarchive_model")
         for key, value in data.items():
             if key in self.__annotations__:
                 if isinstance(value, Mapping):
                     type_name = self.__annotations__[key]
-                    if type_name.startswith('Optional'):
+                    if type_name.startswith("Optional"):
                         type_name = type_name[9:-1]
-                    if type_name.startswith('Sequence'):
+                    if type_name.startswith("Sequence"):
                         type_name = type_name[9:-1]
                         field_type = getattr(qarchive_model, type_name)
-                        setattr(self, key, [
-                            field_type(value[k])
-                            for k in sorted(value, key=int)
-                        ])
+                        setattr(
+                            self,
+                            key,
+                            [field_type(value[k]) for k in sorted(value, key=int)],
+                        )
                     else:
                         field_type = getattr(qarchive_model, type_name)
                         setattr(self, key, field_type(value))

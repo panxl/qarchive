@@ -1,12 +1,14 @@
 import h5py
 
-from qarchive.qarchive_model import QArchive
+from qarchive.qarchive_model import QArchiveRoot
+from qarchive.qarchive_store import QArchiveStore
 
 
-@classmethod
-def from_h5py_file(cls: QArchive, file: h5py.File) -> QArchive:
-    file = h5py.File(file, 'r')
-    return cls(file)
+class QArchive:
+    def __init__(self, file) -> None:
+        self.file = h5py.File(file, "r")
+        self.root = QArchiveRoot(self.file["/"])
+        self.store = QArchiveStore(self.root)
 
-
-QArchive.from_h5py_file = from_h5py_file
+    def close(self) -> None:
+        self.file.close()

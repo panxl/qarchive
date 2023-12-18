@@ -13,4 +13,4 @@ datamodel-codegen \
     --field-extra-keys-without-x-prefix x-init x-repr \
     --disable-timestamp \
     --use-schema-description \
-    --class-name QArchive
+    --class-name QArchiveRoot
